@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cinder>
 <block
-	name="Videodromm"
-	id="com.videodromm.Videodromm"
+	name="Videodromm-Router"
+	id="com.videodromm.Videodromm-Router"
 	author="Bruce Lane"
 	license="GNU AFFERO GENERAL PUBLIC LICENSE"
     version="1.0"
 	summary="Videodromm block for Cinder 0.9"
-	url="https://github.com/Videodromm/Cinder-Videodromm"
-	git="git://github.com/brucelane/Cinder-Videodromm.git"
+	url="https://github.com/Videodromm/Cinder-Videodromm-Router"
+	git="git://github.com/Videodromm/Cinder-Videodromm-Router.git"
 	>
 	<requires>org.libcinder.osc</requires>
-	<requires>ocornut.imgui</requires>
-	<requires>nl.cowlumbus.warping</requires>
+
 	<requires>com.wk.websocketpp</requires>
 	<supports os="msw" />
   	<supports os="macosx" />
