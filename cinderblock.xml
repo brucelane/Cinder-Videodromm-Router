@@ -11,7 +11,7 @@
 	git="git://github.com/Videodromm/Cinder-Videodromm-Router.git"
 	>
 	<requires>org.libcinder.osc</requires>
-
+	<requires>mb.cinder.midi2</requires>
 	<requires>com.wk.websocketpp</requires>
 	<supports os="msw" />
   	<supports os="macosx" />
