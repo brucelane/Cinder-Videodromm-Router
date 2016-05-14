@@ -68,7 +68,20 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aAnimationRef, VDSe
 				mVDSettings->iBeat = msg[0].int32();
 				if (mVDSettings->mIsOSCSender && mVDSettings->mOSCDestinationPort != 9000) mOSCSender->send(msg);
 			});
+			// artcraft
+			mOSCReceiver->setListener("/bar",
+				[&](const osc::Message &msg){
+				mVDSettings->iBeat = msg[0].int32();
+				if (mVDSettings->mIsOSCSender && mVDSettings->mOSCDestinationPort != 9000) mOSCSender->send(msg);
+			});
 			mOSCReceiver->setListener("/live/tempo",
+				[&](const osc::Message &msg){
+				// Animation
+				mVDSession->setBpm( msg[0].flt() );
+				if (mVDSettings->mIsOSCSender && mVDSettings->mOSCDestinationPort != 9000) mOSCSender->send(msg);
+			});
+			// artcraft
+			mOSCReceiver->setListener("/tempo",
 				[&](const osc::Message &msg){
 				// Animation
 				mVDSession->setBpm( msg[0].flt() );
@@ -77,6 +90,12 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aAnimationRef, VDSe
 			mOSCReceiver->setListener("/live/track/meter",
 				[&](const osc::Message &msg){
 				mVDSettings->liveMeter = msg[2].flt();
+				if (mVDSettings->mIsOSCSender && mVDSettings->mOSCDestinationPort != 9000) mOSCSender->send(msg);
+			});
+			// artcraft
+			mOSCReceiver->setListener("/Audio1",
+				[&](const osc::Message &msg){
+				mVDSettings->liveMeter = msg[0].flt()*100.0f;
 				if (mVDSettings->mIsOSCSender && mVDSettings->mOSCDestinationPort != 9000) mOSCSender->send(msg);
 			});
 			mOSCReceiver->setListener("/live/name/trackblock",
