@@ -572,26 +572,27 @@ void VDRouter::wsConnect()
 							}
 							processedContent += shader;
 
-
 							//mShaders->loadLiveShader(processedContent); // need uniforms declared
 							mVDSettings->mShaderToLoad = shader; // CHECK if useless?
 							// route it to websockets clients
 							if (mVDSettings->mIsRouter) {
 								wsWrite(msg);
 							}
-							// save it as is
+							// save it as it was received
+							fs::path pathsToCheck = getAssetPath("") / "glsl";
+							if (!fs::exists(pathsToCheck)) fs::create_directory(pathsToCheck);
+							pathsToCheck = getAssetPath("") / "glsl" / "received";
+							if (!fs::exists(pathsToCheck)) fs::create_directory(pathsToCheck);
+							pathsToCheck = getAssetPath("") / "glsl" / "processed";
+							if (!fs::exists(pathsToCheck)) fs::create_directory(pathsToCheck);
+
 							fs::path currentFile = getAssetPath("") / "glsl" / "received" / fragFileName;
 							ofstream mFrag(currentFile.string(), std::ofstream::binary);
 							mFrag << msg;
 							mFrag.close();
 							CI_LOG_V("received file saved:" + currentFile.string());
 
-
-
-							// check vertex.uv presence
-
 							// save processed file
-							//processedContent = msg;
 							fs::path processedFile = getAssetPath("") / "glsl" / "processed" / fragFileName;
 							ofstream mFragProcessed(processedFile.string(), std::ofstream::binary);
 							mFragProcessed << processedContent;
@@ -604,7 +605,6 @@ void VDRouter::wsConnect()
 							mVDSettings->mMsg += exception.what();
 							mVDSettings->mMsg += "  ";
 						}
-
 
 					}
 				}
