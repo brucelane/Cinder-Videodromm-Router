@@ -40,9 +40,9 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aAnimationRef, VDSe
 			/* TODO
 			Load addresses from json file
 			for (auto & address : jsonList["addresses"]) {
-				mOSCReceiver->setListener(address.getValue(), myFuncForLayerClips);
+			mOSCReceiver->setListener(address.getValue(), myFuncForLayerClips);
 			}
-			TODO use pattern matching 
+			TODO use pattern matching
 			mOSCReceiver->setListener("/layer1/clip*", myFuncForLayerClips);*/
 			mOSCReceiver->setListener("/cc",
 				[&](const osc::Message &msg){
@@ -77,14 +77,14 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aAnimationRef, VDSe
 			mOSCReceiver->setListener("/live/tempo",
 				[&](const osc::Message &msg){
 				// Animation
-				mVDSession->setBpm( msg[0].flt() );
+				mVDSession->setBpm(msg[0].flt());
 				if (mVDSettings->mIsOSCSender && mVDSettings->mOSCDestinationPort != 9000) mOSCSender->send(msg);
 			});
 			// artcraft
 			mOSCReceiver->setListener("/tempo",
 				[&](const osc::Message &msg){
 				// Animation
-				mVDSession->setBpm( msg[0].flt() );
+				mVDSession->setBpm(msg[0].flt());
 				if (mVDSettings->mIsOSCSender && mVDSettings->mOSCDestinationPort != 9000) mOSCSender->send(msg);
 			});
 			mOSCReceiver->setListener("/live/track/meter",
@@ -177,12 +177,12 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aAnimationRef, VDSe
 			mOSCReceiver->listen();
 		}
 
-		// ws
-		clientConnected = false;
-		if (mVDSettings->mAreWebSocketsEnabledAtStartup) wsConnect();
-		mPingTime = getElapsedSeconds();
-		if (mVDSettings->mMIDIOpenAllInputPorts) midiSetup();
 	}
+	// WebSockets
+	clientConnected = false;
+	if (mVDSettings->mAreWebSocketsEnabledAtStartup) wsConnect();
+	mPingTime = getElapsedSeconds();
+	if (mVDSettings->mMIDIOpenAllInputPorts) midiSetup();
 }
 
 void VDRouter::shutdown() {
@@ -384,10 +384,10 @@ void VDRouter::updateParams(int iarg0, float farg1)
 	}
 	/*if (iarg0 > 30 && iarg0 < 39)
 	{
-		// select input
-		mVDSettings->mWarpFbos[mVDSettings->selectedWarp].textureIndex = iarg0 - 31;
-		// activate
-		mVDSettings->mWarpFbos[mVDSettings->selectedWarp].active = !mVDSettings->mWarpFbos[mVDSettings->selectedWarp].active;
+	// select input
+	mVDSettings->mWarpFbos[mVDSettings->selectedWarp].textureIndex = iarg0 - 31;
+	// activate
+	mVDSettings->mWarpFbos[mVDSettings->selectedWarp].active = !mVDSettings->mWarpFbos[mVDSettings->selectedWarp].active;
 	}*/
 	if (iarg0 > 40 && iarg0 < 49)
 	{
