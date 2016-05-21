@@ -10,9 +10,10 @@
 // Animation
 #include "VDAnimation.h"
 
-// MIDI
+// MIDI (only on windows for now)
+#if defined( CINDER_MSW )
 #include "CinderMidi.h"
-
+#endif
 // OSC
 #include "Osc.h"
 #define USE_UDP 1
@@ -62,10 +63,12 @@ namespace VideoDromm
 		void						updateParams(int iarg0, float farg1);
 		// MIDI
 		void						midiSetup();
+        #if defined( CINDER_MSW )
 		int							getMidiInPortsCount() { return mMidiInputs.size(); };
 		string						getMidiInPortName(int i) { return (i<mMidiInputs.size()) ? mMidiInputs[i].portName : "No midi in ports"; };
 		bool						isMidiInConnected(int i) { return (i<mMidiInputs.size()) ? mMidiInputs[i].isConnected : false; };
-		void						openMidiInPort(int i);
+        #endif
+        void						openMidiInPort(int i);
 		void						closeMidiInPort(int i);
 		// OSC
 		void						setupOSCSender();
@@ -92,8 +95,15 @@ namespace VideoDromm
 		// Session
 		VDSessionRef				mVDSession;
 		// MIDI
+        #if defined( CINDER_MSW )
 		vector<midiInput>			mMidiInputs;
+		// midi inputs: couldn't make a vector
+		midi::MidiInput				mMidiIn0;
+		midi::MidiInput				mMidiIn1;
+		midi::MidiInput				mMidiIn2;
+		midi::MidiInput				mMidiIn3;
 		void						midiListener(midi::MidiMessage msg);
+        #endif
 		string						midiControlType;
 		int							midiControl;
 		int							midiPitch;
@@ -101,11 +111,6 @@ namespace VideoDromm
 		float						midiNormalizedValue;
 		int							midiValue;
 		int							midiChannel;
-		// midi inputs: couldn't make a vector
-		midi::MidiInput				mMidiIn0;
-		midi::MidiInput				mMidiIn1;
-		midi::MidiInput				mMidiIn2;
-		midi::MidiInput				mMidiIn3;
 		// WebSockets
 		// Web socket client
 		void						wsClientDisconnect();

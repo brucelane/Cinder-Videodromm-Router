@@ -186,16 +186,18 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aAnimationRef, VDSe
 }
 
 void VDRouter::shutdown() {
+    #if defined( CINDER_MSW )
 	mMidiIn0.ClosePort();
 	mMidiIn1.ClosePort();
 	mMidiIn2.ClosePort();
+#endif
 }
 
 void VDRouter::midiSetup()
 {
 	stringstream ss;
 	ss << "setupMidi: ";
-
+#if defined( CINDER_MSW )
 	mMidiIn0.GetPortList();
 	if (mMidiIn0.mPortCount > 0)
 	{
@@ -235,8 +237,10 @@ void VDRouter::midiSetup()
 	mVDSettings->mMsg = ss.str();
 	midiControlType = "none";
 	midiControl = midiPitch = midiVelocity = midiNormalizedValue = midiValue = midiChannel = 0;
+#endif
 }
 void VDRouter::openMidiInPort(int i) {
+    #if defined( CINDER_MSW )
 	stringstream ss;
 	if (i < mMidiIn0.mPortCount) {
 		if (i == 0)
@@ -259,8 +263,10 @@ void VDRouter::openMidiInPort(int i) {
 	ss << "Opening MIDI port " << i << " " << mMidiInputs[i].portName << std::endl;
 	mVDSettings->mMsg = ss.str();
 	mVDSettings->newMsg = true;
+#endif
 }
 void VDRouter::closeMidiInPort(int i) {
+    #if defined( CINDER_MSW )
 	if (i == 0)
 	{
 		mMidiIn0.ClosePort();
@@ -274,8 +280,9 @@ void VDRouter::closeMidiInPort(int i) {
 		mMidiIn2.ClosePort();
 	}
 	mMidiInputs[i].isConnected = false;
+#endif
 }
-
+#if defined( CINDER_MSW )
 void VDRouter::midiListener(midi::MidiMessage msg)
 {
 	stringstream ss;
@@ -316,6 +323,7 @@ void VDRouter::midiListener(midi::MidiMessage msg)
 	mVDSettings->mMsg = ss.str();
 	mVDSettings->newMsg = true;
 }
+#endif
 void VDRouter::updateParams(int iarg0, float farg1)
 {
 	if (farg1 > 0.1)
@@ -835,12 +843,14 @@ void VDRouter::colorWrite()
 		sendOSCColorMessage("/fb", mVDSettings->controlValues[3]);
 		sendOSCColorMessage("/fa", mVDSettings->controlValues[4]);
 	}
+    #if defined( CINDER_MSW )
 	char col[8];
 	int r = mVDSettings->controlValues[1] * 255;
 	int g = mVDSettings->controlValues[2] * 255;
 	int b = mVDSettings->controlValues[3] * 255;
-	sprintf_s(col, sizeof(col), "#%02X%02X%02X", r, g, b);
+	sprintf(col, sizeof(col), "#%02X%02X%02X", r, g, b);
 	wsWrite(col);
+#endif
 }
 
 void VDRouter::update() {
