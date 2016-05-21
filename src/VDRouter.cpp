@@ -848,7 +848,7 @@ void VDRouter::colorWrite()
 	int r = mVDSettings->controlValues[1] * 255;
 	int g = mVDSettings->controlValues[2] * 255;
 	int b = mVDSettings->controlValues[3] * 255;
-	sprintf(col, sizeof(col), "#%02X%02X%02X", r, g, b);
+	sprintf(col, "#%02X%02X%02X", r, g, b);
 	wsWrite(col);
 #endif
 }
