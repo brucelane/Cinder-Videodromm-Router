@@ -186,7 +186,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aAnimationRef, VDSe
 }
 
 void VDRouter::shutdown() {
-    #if defined( CINDER_MSW )
+#if defined( CINDER_MSW )
 	mMidiIn0.ClosePort();
 	mMidiIn1.ClosePort();
 	mMidiIn2.ClosePort();
@@ -240,7 +240,7 @@ void VDRouter::midiSetup()
 #endif
 }
 void VDRouter::openMidiInPort(int i) {
-    #if defined( CINDER_MSW )
+#if defined( CINDER_MSW )
 	stringstream ss;
 	if (i < mMidiIn0.mPortCount) {
 		if (i == 0)
@@ -266,7 +266,7 @@ void VDRouter::openMidiInPort(int i) {
 #endif
 }
 void VDRouter::closeMidiInPort(int i) {
-    #if defined( CINDER_MSW )
+#if defined( CINDER_MSW )
 	if (i == 0)
 	{
 		mMidiIn0.ClosePort();
@@ -562,6 +562,14 @@ void VDRouter::wsConnect()
 						JsonTree json;
 						try
 						{
+							// create folders if they don't exist
+							fs::path pathsToCheck = getAssetPath("") / "glsl";
+							if (!fs::exists(pathsToCheck)) fs::create_directory(pathsToCheck);
+							pathsToCheck = getAssetPath("") / "glsl" / "received";
+							if (!fs::exists(pathsToCheck)) fs::create_directory(pathsToCheck);
+							pathsToCheck = getAssetPath("") / "glsl" / "processed";
+							if (!fs::exists(pathsToCheck)) fs::create_directory(pathsToCheck);
+							// find commented header
 							string jsonHeader = msg.substr(2, closingCommentPosition - 2);
 							ci::JsonTree::ParseOptions parseOptions;
 							parseOptions.ignoreErrors(false);
@@ -573,39 +581,37 @@ void VDRouter::wsConnect()
 
 							string processedContent = "/*" + jsonHeader + "*/";
 							// check uniforms presence
-							unsigned uniformPosition = msg.find("uniform");
-							if (uniformPosition < 1) {
+							std::size_t foundUniform = msg.find("uniform");
+
+							if (foundUniform != std::string::npos) {
+								// found uniforms
+							}
+							else {
+								// save glsl file without uniforms as it was received
+								fs::path currentFile = getAssetPath("") / "glsl" / "received" / glslFileName;
+								ofstream mFrag(currentFile.string(), std::ofstream::binary);
+								mFrag << msg;
+								mFrag.close();
+								CI_LOG_V("received file saved:" + currentFile.string());
+								mVDSettings->mShaderToLoad = currentFile.string(); // TODO
+
 								// uniforms not found, add include
 								processedContent += "#include shadertoy.inc";
 							}
 							processedContent += shader;
 
 							//mShaders->loadLiveShader(processedContent); // need uniforms declared
-							mVDSettings->mShaderToLoad = shader; // CHECK if useless?
 							// route it to websockets clients
 							if (mVDSettings->mIsRouter) {
 								wsWrite(msg);
 							}
-							// save it as it was received
-							fs::path pathsToCheck = getAssetPath("") / "glsl";
-							if (!fs::exists(pathsToCheck)) fs::create_directory(pathsToCheck);
-							pathsToCheck = getAssetPath("") / "glsl" / "received";
-							if (!fs::exists(pathsToCheck)) fs::create_directory(pathsToCheck);
-							pathsToCheck = getAssetPath("") / "glsl" / "processed";
-							if (!fs::exists(pathsToCheck)) fs::create_directory(pathsToCheck);
-
-							fs::path currentFile = getAssetPath("") / "glsl" / "received" / fragFileName;
-							ofstream mFrag(currentFile.string(), std::ofstream::binary);
-							mFrag << msg;
-							mFrag.close();
-							CI_LOG_V("received file saved:" + currentFile.string());
-
 							// save processed file
 							fs::path processedFile = getAssetPath("") / "glsl" / "processed" / fragFileName;
 							ofstream mFragProcessed(processedFile.string(), std::ofstream::binary);
 							mFragProcessed << processedContent;
 							mFragProcessed.close();
 							CI_LOG_V("processed file saved:" + processedFile.string());
+
 						}
 						catch (cinder::JsonTree::Exception exception)
 						{
@@ -843,7 +849,7 @@ void VDRouter::colorWrite()
 		sendOSCColorMessage("/fb", mVDSettings->controlValues[3]);
 		sendOSCColorMessage("/fa", mVDSettings->controlValues[4]);
 	}
-    #if defined( CINDER_MSW )
+#if defined( CINDER_MSW )
 	char col[8];
 	int r = mVDSettings->controlValues[1] * 255;
 	int g = mVDSettings->controlValues[2] * 255;
