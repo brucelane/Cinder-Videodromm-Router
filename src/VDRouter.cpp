@@ -46,7 +46,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aAnimationRef, VDSe
 			mOSCReceiver->setListener("/layer1/clip*", myFuncForLayerClips);*/
 			mOSCReceiver->setListener("/cc",
 				[&](const osc::Message &msg){
-				mVDSettings->controlValues[msg[0].int32()] = msg[1].flt();
+				mVDAnimation->controlValues[msg[0].int32()] = msg[1].flt();
 				updateParams(msg[0].int32(), msg[1].flt());
 			});
 			mOSCReceiver->setListener("/Freq1",
@@ -56,11 +56,11 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aAnimationRef, VDSe
 			mOSCReceiver->setListener("/backgroundcolor",
 				[&](const osc::Message &msg){
 				// background red
-				mVDSettings->controlValues[5] = msg[0].flt();
+				mVDAnimation->controlValues[5] = msg[0].flt();
 				// background green
-				mVDSettings->controlValues[6] = msg[1].flt();
+				mVDAnimation->controlValues[6] = msg[1].flt();
 				// background blue
-				mVDSettings->controlValues[7] = msg[2].flt();
+				mVDAnimation->controlValues[7] = msg[2].flt();
 
 			});
 			mOSCReceiver->setListener("/live/beat",
@@ -123,7 +123,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aAnimationRef, VDSe
 				[&](const osc::Message &msg){
 				float sumMovement = msg[0].flt();
 				//exposure
-				mVDSettings->controlValues[14] = sumMovement;
+				mVDAnimation->controlValues[14] = sumMovement;
 				//greyScale
 				if (sumMovement < 0.1)
 				{
@@ -140,24 +140,24 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aAnimationRef, VDSe
 				if (handsHeadHeight > 0.3)
 				{
 					// glitch
-					mVDSettings->controlValues[45] = 1.0f;
+					mVDAnimation->controlValues[45] = 1.0f;
 				}
 				else
 				{
 					// glitch
-					mVDSettings->controlValues[45] = 0.0f;
+					mVDAnimation->controlValues[45] = 0.0f;
 				}
 				// background red
-				mVDSettings->controlValues[5] = handsHeadHeight*3.0;
+				mVDAnimation->controlValues[5] = handsHeadHeight*3.0;
 			});
 			mOSCReceiver->setListener("/centerXY",
 				[&](const osc::Message &msg){
 				float x = msg[0].flt();
 				float y = msg[1].flt();
 				// background green
-				mVDSettings->controlValues[6] = y;
+				mVDAnimation->controlValues[6] = y;
 				// green
-				mVDSettings->controlValues[2] = x;
+				mVDAnimation->controlValues[2] = x;
 			});
 			mOSCReceiver->setListener("/selectShader",
 				[&](const osc::Message &msg){
@@ -308,7 +308,7 @@ void VDRouter::midiListener(midi::MidiMessage msg)
 		midiPitch = msg.Pitch;
 		midiVelocity = msg.Velocity;
 		midiNormalizedValue = lmap<float>(midiVelocity, 0.0, 127.0, 0.0, 1.0);
-		mVDSettings->controlValues[14] = 1.0f + midiNormalizedValue; // quick hack!
+		mVDAnimation->controlValues[14] = 1.0f + midiNormalizedValue; // quick hack!
 		break;
 	case MIDI_NOTE_OFF:
 		midiControlType = "/off";
@@ -373,16 +373,16 @@ void VDRouter::updateParams(int iarg0, float farg1)
 	if (iarg0 > 0 && iarg0 < 9)
 	{
 		// sliders 
-		mVDSettings->controlValues[iarg0] = farg1;
+		mVDAnimation->controlValues[iarg0] = farg1;
 	}
 	if (iarg0 > 10 && iarg0 < 19)
 	{
 		// rotary 
-		mVDSettings->controlValues[iarg0] = farg1;
+		mVDAnimation->controlValues[iarg0] = farg1;
 		// audio multfactor
-		if (iarg0 == 13) mVDSettings->controlValues[iarg0] = (farg1 + 0.01) * 10;
+		if (iarg0 == 13) mVDAnimation->controlValues[iarg0] = (farg1 + 0.01) * 10;
 		// exposure
-		if (iarg0 == 14) mVDSettings->controlValues[iarg0] = (farg1 + 0.01) * mVDAnimation->maxExposure;
+		if (iarg0 == 14) mVDAnimation->controlValues[iarg0] = (farg1 + 0.01) * mVDAnimation->maxExposure;
 	}
 	// buttons
 	if (iarg0 > 20 && iarg0 < 29)
@@ -400,7 +400,7 @@ void VDRouter::updateParams(int iarg0, float farg1)
 	if (iarg0 > 40 && iarg0 < 49)
 	{
 		// low row 
-		mVDSettings->controlValues[iarg0] = farg1;
+		mVDAnimation->controlValues[iarg0] = farg1;
 	}
 
 }
@@ -523,7 +523,7 @@ void VDRouter::wsConnect()
 						{
 							int name = jsonElement->getChild("name").getValue<int>();
 							float value = jsonElement->getChild("value").getValue<float>();
-							if (name > mVDSettings->controlValues.size()) {
+							if (name > mVDAnimation->controlValues.size()) {
 								switch (name)
 								{
 								case 300:
@@ -539,7 +539,7 @@ void VDRouter::wsConnect()
 							}
 							else {
 								// basic name value 
-								mVDSettings->controlValues[name] = value;
+								mVDAnimation->controlValues[name] = value;
 							}
 						}
 						JsonTree jsonSelectShader = json.getChild("selectShader");
@@ -753,7 +753,7 @@ void VDRouter::wsConnect()
 						{
 							int name = jsonElement->getChild("name").getValue<int>();
 							float value = jsonElement->getChild("value").getValue<float>();
-							if (name > mVDSettings->controlValues.size()) {
+							if (name > mVDAnimation->controlValues.size()) {
 								switch (name)
 								{
 								case 300:
@@ -769,7 +769,7 @@ void VDRouter::wsConnect()
 							}
 							else {
 								// basic name value 
-								mVDSettings->controlValues[name] = value;
+								mVDAnimation->controlValues[name] = value;
 							}
 						}
 						JsonTree jsonSelectShader = json.getChild("selectShader");
@@ -844,16 +844,16 @@ void VDRouter::sendJSON(string params) {
 void VDRouter::colorWrite()
 {
 	if (mVDSettings->mOSCEnabled && mVDSettings->mIsOSCSender) {
-		sendOSCColorMessage("/fr", mVDSettings->controlValues[1]);
-		sendOSCColorMessage("/fg", mVDSettings->controlValues[2]);
-		sendOSCColorMessage("/fb", mVDSettings->controlValues[3]);
-		sendOSCColorMessage("/fa", mVDSettings->controlValues[4]);
+		sendOSCColorMessage("/fr", mVDAnimation->controlValues[1]);
+		sendOSCColorMessage("/fg", mVDAnimation->controlValues[2]);
+		sendOSCColorMessage("/fb", mVDAnimation->controlValues[3]);
+		sendOSCColorMessage("/fa", mVDAnimation->controlValues[4]);
 	}
 #if defined( CINDER_MSW )
 	char col[8];
-	int r = mVDSettings->controlValues[1] * 255;
-	int g = mVDSettings->controlValues[2] * 255;
-	int b = mVDSettings->controlValues[3] * 255;
+	int r = mVDAnimation->controlValues[1] * 255;
+	int g = mVDAnimation->controlValues[2] * 255;
+	int b = mVDAnimation->controlValues[3] * 255;
 	sprintf(col, "#%02X%02X%02X", r, g, b);
 	wsWrite(col);
 #endif
