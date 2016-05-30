@@ -593,8 +593,7 @@ void VDRouter::wsConnect()
 								mFrag << msg;
 								mFrag.close();
 								CI_LOG_V("received file saved:" + currentFile.string());
-								mVDSettings->mShaderToLoad = currentFile.string(); // TODO
-
+								//mVDSettings->mShaderToLoad = currentFile.string(); 
 								// uniforms not found, add include
 								processedContent += "#include shadertoy.inc";
 							}
@@ -611,6 +610,7 @@ void VDRouter::wsConnect()
 							mFragProcessed << processedContent;
 							mFragProcessed.close();
 							CI_LOG_V("processed file saved:" + processedFile.string());
+								mVDSettings->mShaderToLoad = processedFile.string(); 
 
 						}
 						catch (cinder::JsonTree::Exception exception)
