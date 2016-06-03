@@ -233,8 +233,8 @@ void VDRouter::midiSetup()
 	}
 	ss << std::endl;
 
-	mVDSettings->newMsg = true;
-	mVDSettings->mMsg = ss.str();
+	mVDSettings->mWebSocketsNewMsg = true;
+	mVDSettings->mWebSocketsMsg = ss.str();
 	midiControlType = "none";
 	midiControl = midiPitch = midiVelocity = midiNormalizedValue = midiValue = midiChannel = 0;
 #endif
@@ -261,8 +261,8 @@ void VDRouter::openMidiInPort(int i) {
 	}
 	mMidiInputs[i].isConnected = true;
 	ss << "Opening MIDI port " << i << " " << mMidiInputs[i].portName << std::endl;
-	mVDSettings->mMsg = ss.str();
-	mVDSettings->newMsg = true;
+	mVDSettings->mWebSocketsMsg = ss.str();
+	mVDSettings->mWebSocketsNewMsg = true;
 #endif
 }
 void VDRouter::closeMidiInPort(int i) {
@@ -320,8 +320,8 @@ void VDRouter::midiListener(midi::MidiMessage msg)
 		break;
 	}
 	ss << "MIDI Chn: " << midiChannel << " type: " << midiControlType << " CC: " << midiControl << " Pitch: " << midiPitch << " Vel: " << midiVelocity << " Val: " << midiValue << " NVal: " << midiNormalizedValue << std::endl;
-	mVDSettings->mMsg = ss.str();
-	mVDSettings->newMsg = true;
+	mVDSettings->mWebSocketsMsg = ss.str();
+	mVDSettings->mWebSocketsNewMsg = true;
 }
 #endif
 void VDRouter::updateParams(int iarg0, float farg1)
@@ -469,47 +469,47 @@ void VDRouter::wsConnect()
 		mServer.connectOpenEventHandler([&]()
 		{
 			clientConnected = true;
-			mVDSettings->mMsg = "Connected";
-			mVDSettings->newMsg = true;
+			mVDSettings->mWebSocketsMsg = "Connected";
+			mVDSettings->mWebSocketsNewMsg = true;
 		});
 		mServer.connectCloseEventHandler([&]()
 		{
 			clientConnected = false;
-			mVDSettings->mMsg = "Disconnected";
-			mVDSettings->newMsg = true;
+			mVDSettings->mWebSocketsMsg = "Disconnected";
+			mVDSettings->mWebSocketsNewMsg = true;
 		});
 		mServer.connectFailEventHandler([&](string err)
 		{
-			mVDSettings->mMsg = "WS Error";
-			mVDSettings->newMsg = true;
+			mVDSettings->mWebSocketsMsg = "WS Error";
+			mVDSettings->mWebSocketsNewMsg = true;
 			if (!err.empty()) {
-				mVDSettings->mMsg += ": " + err;
+				mVDSettings->mWebSocketsMsg += ": " + err;
 			}
 
 		});
 		mServer.connectInterruptEventHandler([&]()
 		{
-			mVDSettings->mMsg = "WS Interrupted";
-			mVDSettings->newMsg = true;
+			mVDSettings->mWebSocketsMsg = "WS Interrupted";
+			mVDSettings->mWebSocketsNewMsg = true;
 		});
 		mServer.connectPingEventHandler([&](string msg)
 		{
-			mVDSettings->mMsg = "WS Pinged";
-			mVDSettings->newMsg = true;
+			mVDSettings->mWebSocketsMsg = "WS Pinged";
+			mVDSettings->mWebSocketsNewMsg = true;
 			if (!msg.empty())
 			{
-				mVDSettings->mMsg += ": " + msg;
+				mVDSettings->mWebSocketsMsg += ": " + msg;
 			}
 		});
 		mServer.connectMessageEventHandler([&](string msg)
 		{
 			int left;
 			int index;
-			mVDSettings->mMsg = "WS onRead";
-			mVDSettings->newMsg = true;
+			mVDSettings->mWebSocketsMsg = "WS onRead";
+			mVDSettings->mWebSocketsNewMsg = true;
 			if (!msg.empty())
 			{
-				mVDSettings->mMsg += ": " + msg;
+				mVDSettings->mWebSocketsMsg += ": " + msg;
 				string first = msg.substr(0, 1);
 				if (first == "{")
 				{
@@ -549,9 +549,9 @@ void VDRouter::wsConnect()
 					}
 					catch (cinder::JsonTree::Exception exception)
 					{
-						mVDSettings->mMsg += " error jsonparser exception: ";
-						mVDSettings->mMsg += exception.what();
-						mVDSettings->mMsg += "  ";
+						mVDSettings->mWebSocketsMsg += " error jsonparser exception: ";
+						mVDSettings->mWebSocketsMsg += exception.what();
+						mVDSettings->mWebSocketsMsg += "  ";
 					}
 				}
 				else if (msg.substr(0, 2) == "/*")
@@ -615,9 +615,9 @@ void VDRouter::wsConnect()
 						}
 						catch (cinder::JsonTree::Exception exception)
 						{
-							mVDSettings->mMsg += " error jsonparser exception: ";
-							mVDSettings->mMsg += exception.what();
-							mVDSettings->mMsg += "  ";
+							mVDSettings->mWebSocketsMsg += " error jsonparser exception: ";
+							mVDSettings->mWebSocketsMsg += exception.what();
+							mVDSettings->mWebSocketsMsg += "  ";
 						}
 
 					}
@@ -699,47 +699,47 @@ void VDRouter::wsConnect()
 		mClient.connectOpenEventHandler([&]()
 		{
 			clientConnected = true;
-			mVDSettings->mMsg = "Connected";
-			mVDSettings->newMsg = true;
+			mVDSettings->mWebSocketsMsg = "Connected";
+			mVDSettings->mWebSocketsNewMsg = true;
 		});
 		mClient.connectCloseEventHandler([&]()
 		{
 			clientConnected = false;
-			mVDSettings->mMsg = "Disconnected";
-			mVDSettings->newMsg = true;
+			mVDSettings->mWebSocketsMsg = "Disconnected";
+			mVDSettings->mWebSocketsNewMsg = true;
 		});
 		mClient.connectFailEventHandler([&](string err)
 		{
-			mVDSettings->mMsg = "WS Error";
-			mVDSettings->newMsg = true;
+			mVDSettings->mWebSocketsMsg = "WS Error";
+			mVDSettings->mWebSocketsNewMsg = true;
 			if (!err.empty()) {
-				mVDSettings->mMsg += ": " + err;
+				mVDSettings->mWebSocketsMsg += ": " + err;
 			}
 
 		});
 		mClient.connectInterruptEventHandler([&]()
 		{
-			mVDSettings->mMsg = "WS Interrupted";
-			mVDSettings->newMsg = true;
+			mVDSettings->mWebSocketsMsg = "WS Interrupted";
+			mVDSettings->mWebSocketsNewMsg = true;
 		});
 		mClient.connectPingEventHandler([&](string msg)
 		{
-			mVDSettings->mMsg = "WS Ponged";
-			mVDSettings->newMsg = true;
+			mVDSettings->mWebSocketsMsg = "WS Ponged";
+			mVDSettings->mWebSocketsNewMsg = true;
 			if (!msg.empty())
 			{
-				mVDSettings->mMsg += ": " + msg;
+				mVDSettings->mWebSocketsMsg += ": " + msg;
 			}
 		});
 		mClient.connectMessageEventHandler([&](string msg)
 		{
 			int left;
 			int index;
-			mVDSettings->mMsg = "WS onRead";
-			mVDSettings->newMsg = true;
+			mVDSettings->mWebSocketsMsg = "WS onRead";
+			mVDSettings->mWebSocketsNewMsg = true;
 			if (!msg.empty())
 			{
-				mVDSettings->mMsg += ": " + msg;
+				mVDSettings->mWebSocketsMsg += ": " + msg;
 				string first = msg.substr(0, 1);
 				if (first == "{")
 				{
@@ -779,9 +779,9 @@ void VDRouter::wsConnect()
 					}
 					catch (cinder::JsonTree::Exception exception)
 					{
-						mVDSettings->mMsg += " error jsonparser exception: ";
-						mVDSettings->mMsg += exception.what();
-						mVDSettings->mMsg += "  ";
+						mVDSettings->mWebSocketsMsg += " error jsonparser exception: ";
+						mVDSettings->mWebSocketsMsg += exception.what();
+						mVDSettings->mWebSocketsMsg += "  ";
 					}
 				}
 				else if (first == "#")
@@ -1046,8 +1046,8 @@ void VDRouter::update() {
 	ss << a << ":" << sargs[a] << " ";
 	}
 	ss << std::endl;
-	mVDSettings->newMsg = true;
-	mVDSettings->mMsg = ss.str();
+	mVDSettings->mWebSocketsNewMsg = true;
+	mVDSettings->mWebSocketsMsg = ss.str();
 	// filter messages
 	if (routeMessage)
 	{
