@@ -1,4 +1,4 @@
 Cinder-Videodromm
 ===============
 
-use this block to compile projects from Videodromm organization on github
+This is now integrated in https://github.com/videodromm/Cinder-Videodromm
